@@ -31,7 +31,7 @@ my %WriteMakefileArgs = (
     "Pod::Usage" => 0,
     "Text::CSV" => 0
   },
-  "VERSION" => "0.1",
+  "VERSION" => "0.2",
   "test" => {
     "TESTS" => ""
   }

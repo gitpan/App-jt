@@ -202,3 +202,28 @@ sub transform {
 
 1;
 
+__END__
+
+=pod
+
+=head1 NAME
+
+App::jt - JSON transformer
+
+=head1 VERSION
+
+version 0.2
+
+=head1 AUTHOR
+
+Kang-min Liu <gugod@gugod.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2013 by Kang-min Liu.
+
+This is free software, licensed under:
+
+  The MIT (X11) License
+
+=cut

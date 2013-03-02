@@ -1,4 +1,6 @@
 #!/usr/bin/env perl
+# PODNAME: jt
+# ABSTRACT: JSON Transformer
 
 if (-t STDIN) {
     require Pod::Usage;
@@ -8,9 +10,17 @@ if (-t STDIN) {
 use App::jt;
 App::jt->new_with_options->run;
 
+__END__
+
+=pod
+
 =head1 NAME
 
-jt - JSON transformer
+jt - JSON Transformer
+
+=head1 VERSION
+
+version 0.2
 
 =head1 SYNOPSIS
 
@@ -81,3 +91,17 @@ names. So C<"title"> would match any C<"title"> field an any depth in the input.
 
 Then the input is an array of hash, then it applies on the hashes inside, so
 the selection can be simplified.
+
+=head1 AUTHOR
+
+Kang-min Liu <gugod@gugod.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2013 by Kang-min Liu.
+
+This is free software, licensed under:
+
+  The MIT (X11) License
+
+=cut
