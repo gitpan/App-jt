@@ -4,17 +4,25 @@ package App::jt;
 use 5.010;
 use Moo;
 use MooX::Options;
-use JSON -support_by_pp;
+use JSON::PP;
 use IO::Handle;
 use Hash::Flatten qw(flatten unflatten);
 use List::MoreUtils qw(any);
-use Pod::Usage qw(pod2usage);
 
 has output_handle => (
     is => "ro",
     default => sub {
         my $io = IO::Handle->new;
         $io->fdopen( fileno(STDOUT), "w");
+        binmode $io, ":utf8";
+        return $io;
+    }
+);
+has input_handle => (
+    is => "ro",
+    default => sub {
+        my $io = IO::Handle->new;
+        $io->fdopen( fileno(STDIN), "r");
         binmode $io, ":utf8";
         return $io;
     }
@@ -74,16 +82,24 @@ option 'map' => (
     doc => "Run the specified code for each object, with %_ containing the object content."
 );
 
-has data => ( is => "rw" );
+option 'json_path' => (
+    is => "ro",
+    doc => "A JSONPath string for filtering document.",
+    format => "s",
+);
+
+has data => (
+    is => "rw",
+    doc => "The data that keeps transforming."
+);
 
 sub run {
     my ($self) = @_;
-    binmode STDIN => ":utf8";
 
-    my $json_decoder = JSON->new;
+    my $json_decoder = JSON::PP->new;
     $json_decoder->allow_singlequote(1)->allow_barekey(1);
-
-    my $text = do { local $/; <STDIN> };
+    my $IN   = $self->input_handle;
+    my $text = do { local $/; <$IN> };
     $self->data( $json_decoder->decode($text) );
     $self->transform;
 
@@ -98,6 +114,13 @@ sub run {
     }
 }
 
+sub data_as_arrayref {
+    my ($self) = @_;
+    my $data = $self->data;
+    return $data if ref($data) eq "ARRAY";
+    return [ $data ];
+}
+
 sub out {
     my ($self, $x) = @_;
     $x ||= "";
@@ -107,21 +130,24 @@ sub out {
 
 sub output_json {
     my ($self) = @_;
-    $self->out( JSON::to_json( $self->data, { pretty => !($self->ugly) }) );
+    my $json_encoder = JSON::PP->new;
+    $json_encoder->pretty unless $self->ugly;
+    $self->out( $json_encoder->encode($self->data) );
 }
 
 sub output_asv {
     require Text::CSV;
 
     my ($self, $args) = @_;
-    my $o = $self->data->[0] or return;
+    my $data = $self->data_as_arrayref;
+    my $o = $data->[0] or return;
     my @keys = ($self->fields) ? (@{$self->{fields}}) : ( grep { !ref($o->{$_}) } keys %$o );
 
     my $csv = Text::CSV->new({ binary => 1, %$args });
     $csv->combine(@keys);
 
     $self->out($csv->string);
-    for $o (@{ $self->{data} }) {
+    for $o (@$data) {
         my $o_ = flatten($o);
         $csv->combine(@{$o_}{@keys});
         $self->out( $csv->string );
@@ -161,10 +187,17 @@ sub transform {
             %$o = %_;
         }
     }
+    elsif ($self->json_path) {
+        require JSON::Path;
+
+        my $jpath = JSON::Path->new($self->json_path);
+        my @values = $jpath->values($self->data);
+
+        $self->data( \@values );
+    }
     elsif ($self->fields) {
         my @fields = @{ $self->fields };
         my $data = $self->data;
-
         my $pick_fields_of_hash = sub {
             my $data = shift;
             my $data_ = flatten($data);
@@ -212,7 +245,7 @@ App::jt - JSON transformer
 
 =head1 VERSION
 
-version 0.2
+version 0.3
 
 =head1 AUTHOR
 

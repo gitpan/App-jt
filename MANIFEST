@@ -6,3 +6,4 @@ README
 bin/jt
 dist.ini
 lib/App/jt.pm
+t/basic.t

@@ -11,7 +11,11 @@ use ExtUtils::MakeMaker 6.30;
 my %WriteMakefileArgs = (
   "ABSTRACT" => "JSON transformer",
   "AUTHOR" => "Kang-min Liu <gugod\@gugod.org>",
-  "BUILD_REQUIRES" => {},
+  "BUILD_REQUIRES" => {
+    "IO::String" => 0,
+    "Test::More" => 0,
+    "strict" => 0
+  },
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
   },
@@ -24,16 +28,17 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "Hash::Flatten" => 0,
     "IO::Handle" => 0,
-    "JSON" => 0,
+    "JSON::PP" => 0,
+    "JSON::Path" => 0,
     "List::MoreUtils" => 0,
     "Moo" => 0,
     "MooX::Options" => 0,
     "Pod::Usage" => 0,
     "Text::CSV" => 0
   },
-  "VERSION" => "0.2",
+  "VERSION" => "0.3",
   "test" => {
-    "TESTS" => ""
+    "TESTS" => "t/*.t"
   }
 );
 
