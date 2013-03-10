@@ -1,4 +1,7 @@
 package App::jt;
+{
+  $App::jt::VERSION = '0.40';
+}
 # ABSTRACT: JSON transformer
 
 use 5.010;
@@ -245,7 +248,7 @@ App::jt - JSON transformer
 
 =head1 VERSION
 
-version 0.3
+version 0.40
 
 =head1 AUTHOR
 
