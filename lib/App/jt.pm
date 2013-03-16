@@ -1,6 +1,6 @@
 package App::jt;
 {
-  $App::jt::VERSION = '0.40';
+  $App::jt::VERSION = '0.41';
 }
 # ABSTRACT: JSON transformer
 
@@ -21,6 +21,7 @@ has output_handle => (
         return $io;
     }
 );
+
 has input_handle => (
     is => "ro",
     default => sub {
@@ -83,6 +84,12 @@ option 'map' => (
     is => "ro",
     format => "s",
     doc => "Run the specified code for each object, with %_ containing the object content."
+);
+
+option 'grep' => (
+    is => "ro",
+    format => "s",
+    doc => "Filter the objects by given code. %_ containing the object content."
 );
 
 option 'json_path' => (
@@ -185,11 +192,36 @@ sub transform {
     if ($self->map) {
         my $code = $self->map;
         for my $o (@{ $self->data }) {
-            local %_ = %$o;
-            eval "$code";
-            %$o = %_;
+            local $_ = $o;
+            if (not ref $o) {
+                eval "$code";
+                $o = $_;
+            }
+            elsif (ref($o) eq 'ARRAY') {
+                local @_ = @$o;
+                eval "$code";
+                @$o = @_;
+            }
+            elsif (ref($o) eq 'HASH') {
+                local %_ = %$o;
+                eval "$code";
+                %$o = %_;
+            }
         }
     }
+    if ($self->grep) {
+        my $code = $self->grep;
+        my @objs;
+        for my $o (@{ $self->data }) {
+            local %_ = %$o;
+            my $wanted = eval "$code";
+            if ($wanted) {
+                push @objs, $o;
+            }
+            $self->data(\@objs);
+        }
+    }
+
     elsif ($self->json_path) {
         require JSON::Path;
 
@@ -248,7 +280,7 @@ App::jt - JSON transformer
 
 =head1 VERSION
 
-version 0.40
+version 0.41
 
 =head1 AUTHOR
 
