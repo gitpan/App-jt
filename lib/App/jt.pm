@@ -1,6 +1,6 @@
 package App::jt;
 {
-  $App::jt::VERSION = '0.41';
+  $App::jt::VERSION = '0.42';
 }
 # ABSTRACT: JSON transformer
 
@@ -51,12 +51,6 @@ option 'csv' => (
 );
 
 option 'tsv' => (
-    is => "ro",
-    default => sub { 0 },
-    doc => "Produce csv output for scalar values."
-);
-
-option 'csv' => (
     is => "ro",
     default => sub { 0 },
     doc => "Produce csv output for scalar values."
@@ -280,7 +274,7 @@ App::jt - JSON transformer
 
 =head1 VERSION
 
-version 0.41
+version 0.42
 
 =head1 AUTHOR
 

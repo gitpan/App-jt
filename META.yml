@@ -26,4 +26,4 @@ requires:
   Pod::Usage: 0
   Text::CSV: 0
   perl: 5.010
-version: 0.41
+version: 0.42

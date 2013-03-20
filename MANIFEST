@@ -9,3 +9,4 @@ examples/cities.json
 examples/store.json
 lib/App/jt.pm
 t/basic.t
+t/csv.t
