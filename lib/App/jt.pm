@@ -1,6 +1,6 @@
 package App::jt;
 {
-  $App::jt::VERSION = '0.42';
+  $App::jt::VERSION = '0.43';
 }
 # ABSTRACT: JSON transformer
 
@@ -274,7 +274,7 @@ App::jt - JSON transformer
 
 =head1 VERSION
 
-version 0.42
+version 0.43
 
 =head1 AUTHOR
 
